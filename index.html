@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RA Services | IMO Recharge</title>
+  <style>
+    :root{--navy:#00384b;--blue:#20a8c7;--ink:#20313b;--muted:#687781;--line:#e1e7ea;--bg:#f4f6f7}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+    .wrap{max-width:760px;margin:0 auto;padding:14px}
+    .ticker{padding:10px 14px;background:#fff;border-radius:12px;color:#244d69;font-size:14px;margin-bottom:12px}
+    .header{background:linear-gradient(120deg,#002f42,#075c72);color:#fff;border-radius:24px;padding:22px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 8px 20px #002f4222}
+    .brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border:2px solid #8be5f5;border-radius:50%;display:grid;place-items:center;font-weight:bold;font-size:13px}
+    .brand h1{font-size:21px;margin:0 0 5px}.brand p{margin:0;color:#c8e8ef;font-size:13px}
+    .call{color:#fff;text-decoration:none;border:1px solid #8ac8d6;border-radius:15px;padding:12px 14px;text-align:center;font-size:13px;white-space:nowrap}
+    .call strong{display:block;font-size:15px;margin-top:4px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:24px;padding:20px;margin-top:14px;box-shadow:0 5px 18px #1837470b}
+    label{display:block;font-weight:600;margin-bottom:10px}.field{width:100%;border:2px solid var(--blue);border-radius:18px;padding:17px 18px;font-size:17px;outline:none;background:#fbfdfe}
+    .hint{font-size:13px;color:var(--muted);margin:9px 0 16px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .pack{border:2px solid #e1e4e6;border-radius:18px;background:#fff;min-height:116px;padding:17px 8px;cursor:pointer;text-align:center;box-shadow:0 5px 12px #152b3810;color:var(--ink)}
+    .pack.selected{border:3px solid #08749a;box-shadow:inset 0 0 0 3px #c9e9f2}
+    .diamonds{font-size:20px;font-weight:600}.price{font-size:15px;color:#5d6670;margin-top:12px}
+    .summary{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:18px;padding:14px;border:1px solid var(--line);border-radius:18px}
+    .qty{display:flex;align-items:center;gap:8px;background:#f5fbfd;border:1px solid #c8e5ee;border-radius:16px;padding:6px}
+    .qty button{width:38px;height:38px;border:1px solid #d7e0e4;background:#fff;border-radius:12px;font-size:22px;color:#07516b}
+    .qty span{min-width:44px;text-align:center;font-size:18px}
+    .totals{text-align:right;line-height:1.7}.totals strong{font-size:18px}
+    .proceed{width:100%;border:0;border-radius:16px;background:linear-gradient(100deg,#68a9c8,#527f9b);color:white;font-size:17px;padding:17px;margin-top:16px}
+    .section-title{font-size:21px;margin:0 0 10px}.support-card{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:17px;padding:15px;margin-top:12px;text-decoration:none;color:var(--ink);box-shadow:0 4px 12px #152b380c}
+    .support-icon{width:48px;height:48px;border-radius:15px;background:#e0f8ec;color:#078a50;display:grid;place-items:center;font-size:24px}
+    .support-card small{display:block;color:var(--muted);margin-bottom:5px;font-size:14px}.support-card strong{font-size:17px}
+    .search{width:100%;padding:16px;border:1px solid #d8dfe3;border-radius:15px;font-size:16px}
+    .search-btn{width:100%;margin-top:10px;border:1px solid #d8dfe3;border-radius:15px;background:#fff;padding:15px;color:#07516b;font-size:16px}
+    .note{font-size:13px;color:var(--muted);line-height:1.6;margin-top:12px}
+    @media(max-width:420px){.wrap{padding:8px}.panel{padding:15px}.grid{gap:8px}.pack{min-height:105px;padding:14px 4px}.diamonds{font-size:17px}.price{font-size:14px}.header{padding:17px 14px}.brand h1{font-size:18px}.call{padding:10px 9px}.summary{padding:10px}.qty button{width:32px;height:34px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="ticker">💎 IMO Diamond Recharge — Best rate</div>
+  <header class="header">
+    <div class="brand"><div class="logo">imo</div><div><h1>IMO Recharge</h1><p>Powered by RA Services</p></div></div>
+    <a class="call" href="tel:+917304704301">☎ <strong>Call Now</strong>+91 7304704301</a>
+  </header>
+
+  <section class="panel">
+    <label for="profile">Profile ID</label>
+    <input class="field" id="profile" type="text" placeholder="Enter Profile ID" autocomplete="off">
+    <p class="hint">Recharge will be posted to this profile only.</p>
+    <div class="grid" id="packages"></div>
+    <div class="summary">
+      <div class="qty"><button type="button" id="minus" aria-label="Decrease quantity">−</button><span id="qty">1</span><button type="button" id="plus" aria-label="Increase quantity">+</button></div>
+      <div class="totals">Total 💎 <strong id="totalDiamonds">10</strong><br>Total <strong id="totalPrice">₹30.00</strong></div>
+    </div>
+    <button class="proceed" type="button" id="proceed">Proceed to Recharge</button>
+    <p class="note" id="notice">Demo preview: payment and actual IMO recharge are not connected yet.</p>
+  </section>
+
+  <section class="panel">
+    <h2 class="section-title">Need Help &amp; Support?</h2>
+    <p>IMO ya WhatsApp par contact kijiye.</p>
+    <a class="support-card" href="https://wa.me/917304704301" target="_blank" rel="noopener">
+      <div class="support-icon">◉</div><div><small>WhatsApp Support</small><strong>+91 7304704301</strong></div>
+    </a>
+  </section>
+
+  <section class="panel">
+    <h2 class="section-title">Check Recharge History</h2>
+    <input class="search" id="history" placeholder="Profile ID / Order ID / UTR">
+    <button class="search-btn" id="search" type="button">Search</button>
+    <p class="note" id="historyNote">Profile ID, IMO Order ID, ya UTR enter karke status dekhiye.</p>
+  </section>
+</div>
+<script>
+  const packages = [
+    {diamonds:10,price:30},{diamonds:50,price:92},{diamonds:100,price:176},
+    {diamonds:200,price:352},{diamonds:300,price:528},{diamonds:500,price:880},
+    {diamonds:600,price:1056},{diamonds:1000,price:1760},{diamonds:2000,price:3520},
+    {diamonds:3000,price:5280},{diamonds:5000,price:8800},{diamonds:10000,price:17500}
+  ];
+  let selected = 0, quantity = 1;
+  const grid = document.getElementById('packages');
+  function render(){
+    grid.innerHTML = '';
+    packages.forEach((p,i)=>{
+      const b=document.createElement('button'); b.type='button'; b.className='pack'+(i===selected?' selected':'');
+      b.innerHTML=`<div class="diamonds">💎 ${p.diamonds}</div><div class="price">₹ ${p.price.toFixed(2)}</div>`;
+      b.addEventListener('click',()=>{selected=i;render()}); grid.appendChild(b);
+    });
+    document.getElementById('qty').textContent=quantity;
+    document.getElementById('totalDiamonds').textContent=(packages[selected].diamonds*quantity).toLocaleString('en-IN');
+    document.getElementById('totalPrice').textContent='₹'+(packages[selected].price*quantity).toFixed(2);
+  }
+  document.getElementById('minus').addEventListener('click',()=>{quantity=Math.max(1,quantity-1);render()});
+  document.getElementById('plus').addEventListener('click',()=>{quantity=Math.min(99,quantity+1);render()});
+  document.getElementById('proceed').addEventListener('click',()=>{
+    const id=document.getElementById('profile').value.trim();
+    document.getElementById('notice').textContent=id?'Demo only: Profile ID '+id+' entered. Payment/recharge connection is the next development step.':'Please enter your IMO Profile ID first.';
+  });
+  document.getElementById('search').addEventListener('click',()=>{
+    document.getElementById('historyNote').textContent='Recharge history lookup will work after the order database is connected.';
+  });
+  render();
+</script>
+</body>
+</html>
