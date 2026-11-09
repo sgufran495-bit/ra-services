@@ -2,227 +2,374 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RA Services | IMO Diamond Recharge</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RA Services | IMO Recharge</title>
 
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f2f6f8;color:#20313b}
-.topbar{background:#00384b;color:white;padding:13px;text-align:center;font-weight:bold}
-.ticker{background:#20a8c7;color:white;padding:10px;text-align:center}
-.container{max-width:600px;margin:18px auto;padding:0 13px}
-.header,.card{background:white;border-radius:13px;padding:17px;margin-top:15px;box-shadow:0 2px 9px #0000000d}
-.header{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.brand h1{margin:0;color:#00384b;font-size:23px}
-.brand p{margin:5px 0 0;color:#71808a;font-size:12px}
-.call{background:#e7f8fc;color:#007b99;padding:10px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:bold}
-h2{margin:0 0 14px;color:#00384b;font-size:18px}
-label{display:block;font-size:13px;font-weight:bold;margin-bottom:7px}
-input{width:100%;padding:13px;border:1px solid #d5e0e5;border-radius:8px;font-size:15px}
-.packages{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.package{border:1px solid #dce6ea;border-radius:10px;padding:13px 5px;text-align:center;cursor:pointer;background:white}
-.package strong{display:block;color:#00384b;font-size:16px}
-.package p{margin:7px 0 0;color:#0789a7;font-weight:bold}
-.package.active{border:2px solid #20a8c7;background:#eafaff}
-.quantity-row{display:flex;align-items:center;justify-content:space-between;margin-top:18px}
-.quantity-controls{display:flex;align-items:center;gap:15px}
-.quantity-controls button{width:35px;height:35px;border:0;border-radius:8px;background:#e7f7fb;color:#007b99;font-size:21px}
-#quantity{font-size:17px;font-weight:bold}
-.total-row{display:flex;justify-content:space-between;border-top:1px solid #e5ecef;margin-top:16px;padding-top:15px;font-weight:bold}
-#total{color:#0086a4;font-size:21px}
-.proceed{width:100%;margin-top:18px;padding:15px;border:0;border-radius:9px;background:#087f9d;color:white;font-size:16px;font-weight:bold}
-.support-card a{display:block;text-decoration:none;padding:13px;border-radius:8px;margin-top:9px;text-align:center;font-weight:bold}
-.whatsapp{background:#e8f8ed;color:#168b45}
-.imo{background:#eaf5ff;color:#1768a4}
-.history{color:#087f9d;text-align:center;font-weight:bold;padding:10px;cursor:pointer}
-.footer{text-align:center;color:#84939b;font-size:12px;padding:22px 10px}
-@media(max-width:380px){.packages{grid-template-columns:repeat(2,1fr)}}
-</style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root{--navy:#00384b;--blue:#20a8c7;--ink:#20313b;--muted:#687781;--line:#e1e7ea;--bg:#f4f6f7}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+    .wrap{max-width:760px;margin:0 auto;padding:14px}
+    .ticker{padding:10px 14px;background:#fff;border-radius:12px;color:#244d69;font-size:14px;margin-bottom:12px}
+    .header{background:linear-gradient(120deg,#002f42,#075c72);color:#fff;border-radius:24px;padding:22px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 8px 20px #002f4222}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border:2px solid #8be5f5;border-radius:50%;display:grid;place-items:center;font-weight:bold;font-size:13px}
+    .brand h1{font-size:21px;margin:0 0 5px}
+    .brand p{margin:0;color:#c8e8ef;font-size:13px}
+    .call{color:#fff;text-decoration:none;border:1px solid #8ac8d6;border-radius:15px;padding:12px 14px;text-align:center;font-size:13px;white-space:nowrap}
+    .call strong{display:block;font-size:15px;margin-top:4px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:24px;padding:20px;margin-top:14px;box-shadow:0 5px 18px #1837470b}
+    label{display:block;font-weight:600;margin-bottom:10px}
+    .field{width:100%;border:2px solid var(--blue);border-radius:18px;padding:17px 18px;font-size:17px;outline:none;background:#fbfdfe}
+    .hint{font-size:13px;color:var(--muted);margin:9px 0 16px}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .pack{border:2px solid #e1e4e6;border-radius:18px;background:#fff;min-height:116px;padding:17px 8px;cursor:pointer;text-align:center;box-shadow:0 5px 12px #152b3810;color:var(--ink)}
+    .pack.selected{border:3px solid #08749a;box-shadow:inset 0 0 0 3px #c9e9f2}
+    .diamonds{font-size:20px;font-weight:600}
+    .price{font-size:15px;color:#5d6670;margin-top:12px}
+    .summary{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:18px;padding:14px;border:1px solid var(--line);border-radius:18px}
+    .qty{display:flex;align-items:center;gap:8px;background:#f5fbfd;border:1px solid #c8e5ee;border-radius:16px;padding:6px}
+    .qty button{width:38px;height:38px;border:1px solid #d7e0e4;background:#fff;border-radius:12px;font-size:22px;color:#07516b}
+    .qty span{min-width:44px;text-align:center;font-size:18px}
+    .totals{text-align:right;line-height:1.7}
+    .totals strong{font-size:18px}
+    .proceed{width:100%;border:0;border-radius:16px;background:linear-gradient(100deg,#68a9c8,#527f9b);color:white;font-size:17px;padding:17px;margin-top:16px}
+    .section-title{font-size:21px;margin:0 0 10px}
+    .support-card{display:flex;align-items:center;gap:14px;border:1px solid var(--line);border-radius:17px;padding:15px;margin-top:12px;text-decoration:none;color:var(--ink);box-shadow:0 4px 12px #152b380c}
+    .support-icon{width:48px;height:48px;border-radius:15px;background:#e0f8ec;color:#078a50;display:grid;place-items:center;font-size:24px}
+    .support-icon.imo-icon{background:#e5f3ff;color:#1768a4}
+    .support-card small{display:block;color:var(--muted);margin-bottom:5px;font-size:14px}
+    .support-card strong{font-size:17px}
+    .search{width:100%;padding:16px;border:1px solid #d8dfe3;border-radius:15px;font-size:16px}
+    .search-btn{width:100%;margin-top:10px;border:1px solid #d8dfe3;border-radius:15px;background:#fff;padding:15px;color:#07516b;font-size:16px}
+    .note{font-size:13px;color:var(--muted);line-height:1.6;margin-top:12px}
+    @media(max-width:420px){
+      .wrap{padding:8px}
+      .panel{padding:15px}
+      .grid{gap:8px}
+      .pack{min-height:105px;padding:14px 4px}
+      .diamonds{font-size:17px}
+      .price{font-size:14px}
+      .header{padding:17px 14px}
+      .brand h1{font-size:18px}
+      .call{padding:10px 9px}
+      .summary{padding:10px}
+      .qty button{width:32px;height:34px}
+    }
+  </style>
 </head>
 
 <body>
-<div class="topbar">RA SERVICES</div>
-<div class="ticker">💎 IMO Diamond Recharge — Best Rate</div>
 
-<div class="container">
-  <div class="header">
-    <div class="brand">
-      <h1>IMO Recharge</h1>
-      <p>Powered by RA Services</p>
-    </div>
-    <a class="call" href="tel:+917304704301">+91 7304704301</a>
+<div class="wrap">
+
+  <div class="ticker" id="announcement">
+    💎 IMO Diamond Recharge — Best rate
   </div>
 
-  <div class="card">
-    <h2>💎 IMO Diamond Recharge</h2>
-    <label for="profileId">IMO Profile ID</label>
-    <input id="profileId" type="text" placeholder="Enter your IMO Profile ID">
-
-    <h2 style="margin-top:22px">Select Diamond Package</h2>
-    <div class="packages" id="packages">Loading packages...</div>
-
-    <div class="quantity-row">
-      <strong>Quantity</strong>
-      <div class="quantity-controls">
-        <button type="button" id="minus">−</button>
-        <span id="quantity">1</span>
-        <button type="button" id="plus">+</button>
+  <header class="header">
+    <div class="brand">
+      <div class="logo">imo</div>
+      <div>
+        <h1>IMO Recharge</h1>
+        <p id="brandName">Powered by RA Services</p>
       </div>
     </div>
 
-    <div class="total-row">
-      <span>Total Amount</span>
-      <span id="total">₹0</span>
+    <a class="call" id="callLink" href="tel:+917304704301">
+      ☎ <strong>Call Now</strong>
+      <span id="callNumber">+91 7304704301</span>
+    </a>
+  </header>
+
+  <section class="panel">
+
+    <label for="profile">Profile ID</label>
+
+    <input class="field" id="profile" type="text"
+      placeholder="Enter Profile ID" autocomplete="off">
+
+    <p class="hint">
+      Recharge will be posted to this profile only.
+    </p>
+
+    <div class="grid" id="packages"></div>
+
+    <div class="summary">
+
+      <div class="qty">
+        <button type="button" id="minus" aria-label="Decrease quantity">−</button>
+        <span id="qty">1</span>
+        <button type="button" id="plus" aria-label="Increase quantity">+</button>
+      </div>
+
+      <div class="totals">
+        Total 💎 <strong id="totalDiamonds">10</strong>
+        <br>
+        Total <strong id="totalPrice">₹30.00</strong>
+      </div>
+
     </div>
-    <button class="proceed" id="proceed" type="button">Proceed to Recharge</button>
-  </div>
 
-  <div class="card support-card">
-    <h2>Customer Support</h2>
-    <a class="whatsapp" id="whatsappLink" href="https://wa.me/917304704301" target="_blank" rel="noopener noreferrer">WhatsApp Support</a>
-    <a class="imo" id="imoGroupLink" href="#" target="_blank" rel="noopener noreferrer" style="display:none">Join IMO Group</a>
-  </div>
+    <button class="proceed" type="button" id="proceed">
+      Proceed to Recharge
+    </button>
 
-  <div class="card">
-    <h2>Recharge History</h2>
-    <div class="history" id="history">Recharge History</div>
-    <p style="font-size:12px;color:#84939b;text-align:center">Your recharge history will appear here when order history is connected.</p>
-  </div>
+    <p class="note" id="notice">
+      Demo preview: payment and actual IMO recharge are not connected yet.
+    </p>
+
+  </section>
+
+  <section class="panel">
+
+    <h2 class="section-title">Need Help &amp; Support?</h2>
+
+    <p>IMO ya WhatsApp par contact kijiye.</p>
+
+    <a class="support-card" id="whatsappLink"
+       href="https://wa.me/917304704301"
+       target="_blank" rel="noopener noreferrer">
+
+      <div class="support-icon">◉</div>
+
+      <div>
+        <small>WhatsApp Support</small>
+        <strong id="whatsappNumber">+91 7304704301</strong>
+      </div>
+
+    </a>
+
+    <a class="support-card" id="imoGroupLink"
+       href="#"
+       target="_blank" rel="noopener noreferrer"
+       style="display:none">
+
+      <div class="support-icon imo-icon">◎</div>
+
+      <div>
+        <small>IMO Group</small>
+        <strong>Join IMO Group</strong>
+      </div>
+
+    </a>
+
+  </section>
+
+  <section class="panel">
+
+    <h2 class="section-title">Check Recharge History</h2>
+
+    <input class="search" id="history"
+      placeholder="Profile ID / Order ID / UTR">
+
+    <button class="search-btn" id="search" type="button">
+      Search
+    </button>
+
+    <p class="note" id="historyNote">
+      Profile ID, IMO Order ID, ya UTR enter karke status dekhiye.
+    </p>
+
+  </section>
+
 </div>
 
-<div class="footer">© RA Services. All Rights Reserved.</div>
-
 <script>
-const SUPABASE_URL="https://xxnqggagisjrpeupudma.supabase.co";
-const SUPABASE_KEY="sb_publishable_lveUqOl5kDN6nnVTeLsRrg_RQxAe7rq";
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const SUPABASE_URL = "https://xxnqggagisjrpeupudma.supabase.co";
 
-let packages=[
-{diamonds:10,price:30},
-{diamonds:50,price:92},
-{diamonds:100,price:176},
-{diamonds:200,price:352},
-{diamonds:300,price:528},
-{diamonds:500,price:880},
-{diamonds:600,price:1056},
-{diamonds:1000,price:1760},
-{diamonds:2000,price:3520},
-{diamonds:3000,price:5280},
-{diamonds:5000,price:8800},
-{diamonds:10000,price:17500}
-];
+  const SUPABASE_KEY =
+    "sb_publishable_lveUqOl5kDN6nnVTeLsRrg_RQxAe7rq";
 
-let selectedPackage=null;
-let quantity=1;
+  const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
-const packagesBox=document.getElementById("packages");
-const quantityText=document.getElementById("quantity");
-const totalText=document.getElementById("total");
+  const defaultPackages = [
+    {diamonds:10,price:30},
+    {diamonds:50,price:92},
+    {diamonds:100,price:176},
+    {diamonds:200,price:352},
+    {diamonds:300,price:528},
+    {diamonds:500,price:880},
+    {diamonds:600,price:1056},
+    {diamonds:1000,price:1760},
+    {diamonds:2000,price:3520},
+    {diamonds:3000,price:5280},
+    {diamonds:5000,price:8800},
+    {diamonds:10000,price:17500}
+  ];
 
-function money(value){
- return "₹"+Number(value).toLocaleString("en-IN");
-}
+  let packages = [...defaultPackages];
+  let selected = 0;
+  let quantity = 1;
 
-function renderPackages(){
- packagesBox.innerHTML="";
- packages.forEach((pkg,index)=>{
-  const card=document.createElement("div");
-  card.className="package";
-  const title=document.createElement("strong");
-  title.textContent=Number(pkg.diamonds).toLocaleString("en-IN")+" 💎";
-  const price=document.createElement("p");
-  price.textContent=money(pkg.price);
-  card.append(title,price);
-  card.addEventListener("click",()=>{
-   selectedPackage=index;
-   quantity=1;
-   document.querySelectorAll(".package").forEach(el=>el.classList.remove("active"));
-   card.classList.add("active");
-   updateTotal();
+  const grid = document.getElementById("packages");
+
+  function render() {
+    grid.innerHTML = "";
+
+    packages.forEach((p, i) => {
+      const b = document.createElement("button");
+
+      b.type = "button";
+      b.className = "pack" + (i === selected ? " selected" : "");
+
+      const diamondText = document.createElement("div");
+      diamondText.className = "diamonds";
+      diamondText.textContent =
+        "💎 " + Number(p.diamonds).toLocaleString("en-IN");
+
+      const priceText = document.createElement("div");
+      priceText.className = "price";
+      priceText.textContent =
+        "₹ " + Number(p.price).toFixed(2);
+
+      b.appendChild(diamondText);
+      b.appendChild(priceText);
+
+      b.addEventListener("click", () => {
+        selected = i;
+        render();
+      });
+
+      grid.appendChild(b);
+    });
+
+    updateTotal();
+  }
+
+  function updateTotal() {
+    if (!packages.length) return;
+
+    document.getElementById("qty").textContent = quantity;
+
+    document.getElementById("totalDiamonds").textContent =
+      (Number(packages[selected].diamonds) * quantity)
+      .toLocaleString("en-IN");
+
+    document.getElementById("totalPrice").textContent =
+      "₹" + (Number(packages[selected].price) * quantity).toFixed(2);
+  }
+
+  document.getElementById("minus").addEventListener("click", () => {
+    quantity = Math.max(1, quantity - 1);
+    updateTotal();
   });
-  packagesBox.appendChild(card);
- });
-}
 
-function updateTotal(){
- quantityText.textContent=quantity;
- if(selectedPackage===null){totalText.textContent="₹0";return;}
- totalText.textContent=money(Number(packages[selectedPackage].price)*quantity);
-}
+  document.getElementById("plus").addEventListener("click", () => {
+    quantity = Math.min(99, quantity + 1);
+    updateTotal();
+  });
 
-document.getElementById("minus").addEventListener("click",()=>{
- if(selectedPackage===null)return;
- quantity=Math.max(1,quantity-1);
- updateTotal();
-});
+  function updateSite(site) {
+    if (!site) return;
 
-document.getElementById("plus").addEventListener("click",()=>{
- if(selectedPackage===null)return;
- quantity++;
- updateTotal();
-});
+    if (site.brand) {
+      document.getElementById("brandName").textContent =
+        "Powered by " + site.brand;
+    }
 
-function updateSite(site){
- if(!site)return;
+    if (site.announcement) {
+      document.getElementById("announcement").textContent =
+        site.announcement;
+    }
 
- if(site.brand)document.querySelector(".brand h1").textContent=site.brand;
- if(site.announcement)document.querySelector(".ticker").textContent=site.announcement;
+    if (site.call) {
+      const number = String(site.call);
+      document.getElementById("callNumber").textContent = number;
+      document.getElementById("callLink").href =
+        "tel:" + number.replace(/[^\d+]/g, "");
+    }
 
- if(site.call){
-  const link=document.querySelector(".call");
-  link.href="tel:"+String(site.call).replace(/[^\d+]/g,"");
-  link.textContent=site.call;
- }
+    if (site.whatsapp) {
+      const number = String(site.whatsapp);
+      document.getElementById("whatsappNumber").textContent = number;
 
- if(site.whatsapp){
-  const number=String(site.whatsapp).replace(/\D/g,"");
-  document.getElementById("whatsappLink").href="https://wa.me/"+number;
- }
+      document.getElementById("whatsappLink").href =
+        "https://wa.me/" + number.replace(/\D/g, "");
+    }
 
- if(site.imo){
-  try{
-   const url=new URL(site.imo);
-   if(url.protocol==="https:"||url.protocol==="http:"){
-    const link=document.getElementById("imoGroupLink");
-    link.href=url.href;
-    link.style.display="block";
-   }
-  }catch(error){console.error("Invalid IMO group link");}
- }
-}
+    if (site.imo) {
+      try {
+        const url = new URL(site.imo);
 
-async function loadSettings(){
- const {data,error}=await db.from("site_settings").select("settings").eq("id",1).maybeSingle();
+        if (url.protocol === "https:" || url.protocol === "http:") {
+          const link = document.getElementById("imoGroupLink");
+          link.href = url.href;
+          link.style.display = "flex";
+        }
+      } catch (error) {
+        console.error("Invalid IMO group link");
+      }
+    }
+  }
 
- if(error){
-  console.error("Settings load error:",error);
-  renderPackages();
-  return;
- }
+  async function loadSettings() {
+    try {
+      const {data, error} = await db
+        .from("site_settings")
+        .select("settings")
+        .eq("id", 1)
+        .maybeSingle();
 
- const saved=data?.settings||{};
- if(Array.isArray(saved.packages)&&saved.packages.length){
-  packages=saved.packages;
- }
- updateSite(saved.site||{});
- renderPackages();
-}
+      if (error) {
+        console.error("Supabase settings error:", error);
+        render();
+        return;
+      }
 
-document.getElementById("proceed").addEventListener("click",()=>{
- const profileId=document.getElementById("profileId").value.trim();
- if(!profileId){alert("Please enter your IMO Profile ID");return;}
- if(selectedPackage===null){alert("Please select a diamond package");return;}
- alert("Payment and actual recharge are not connected yet. Please contact support.");
-});
+      const saved = data?.settings || {};
 
-document.getElementById("history").addEventListener("click",()=>{
- alert("Recharge history is not connected yet.");
-});
+      if (Array.isArray(saved.packages) && saved.packages.length) {
+        const validPackages = saved.packages.filter(p =>
+          Number.isFinite(Number(p.diamonds)) &&
+          Number(p.diamonds) > 0 &&
+          Number.isFinite(Number(p.price)) &&
+          Number(p.price) >= 0
+        );
 
-renderPackages();
-loadSettings();
+        if (validPackages.length) {
+          packages = validPackages
+            .map(p => ({
+              diamonds: Number(p.diamonds),
+              price: Number(p.price)
+            }))
+            .sort((a, b) => a.diamonds - b.diamonds);
+        }
+      }
+
+      selected = 0;
+      updateSite(saved.site || {});
+      render();
+
+    } catch (error) {
+      console.error("Website loading error:", error);
+      render();
+    }
+  }
+
+  document.getElementById("proceed").addEventListener("click", () => {
+    const id = document.getElementById("profile").value.trim();
+
+    document.getElementById("notice").textContent = id
+      ? "Demo only: Profile ID " + id +
+        " entered. Payment/recharge connection is the next development step."
+      : "Please enter your IMO Profile ID first.";
+  });
+
+  document.getElementById("search").addEventListener("click", () => {
+    document.getElementById("historyNote").textContent =
+      "Recharge history lookup will work after the order database is connected.";
+  });
+
+  render();
+  loadSettings();
 </script>
+
 </body>
 </html>
