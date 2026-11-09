@@ -1,59 +1,247 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RA Services | Admin Panel Demo</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RA Services Admin</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f3f6f8;color:#20313b;font-family:Arial,sans-serif}.wrap{max-width:780px;margin:auto;padding:16px}
-header{background:#063d51;color:white;padding:22px;border-radius:20px;margin-bottom:16px}h1{font-size:22px;margin:0 0 6px}header p{margin:0;color:#cce4eb;font-size:14px}
-.card{background:#fff;border:1px solid #e0e7eb;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 4px 14px #1634470b}
-h2{font-size:18px;margin:0 0 14px}.notice{background:#fff7df;border:1px solid #f0d58b;padding:12px;border-radius:12px;font-size:13px;line-height:1.5;margin-bottom:14px}
-label{display:block;font-size:13px;font-weight:bold;margin:12px 0 6px}input,textarea{width:100%;padding:12px;border:1px solid #ccd8de;border-radius:10px;font-size:15px;font-family:inherit}textarea{min-height:78px;resize:vertical}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
-button{border:0;border-radius:11px;padding:12px 15px;font-weight:bold;cursor:pointer;background:#08789b;color:white}.secondary{background:#e8f1f4;color:#164b5e}.danger{background:#fff0ef;color:#a52e27}
-table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:10px 7px;border-bottom:1px solid #edf0f2}th{color:#64747d;font-size:12px}
-.status{font-size:13px;color:#16814b;margin-top:10px;min-height:18px}.tabhint{font-size:13px;color:#667781;line-height:1.5;margin-top:8px}
-@media(max-width:440px){.wrap{padding:10px}.card{padding:14px}.row{grid-template-columns:1fr}table{font-size:12px}th,td{padding:9px 4px}}
-</style></head>
-<body><main class="wrap">
-<header><h1>RA Services — Admin Panel</h1><p>Website Settings &amp; Diamond Package Management · Demo</p></header>
-<div class="notice"><b>महत्वपूर्ण:</b> यह अभी फ्रंटएंड डेमो है। सेटिंग्स और पैकेज इसी ब्राउज़र में सेव होंगे। असली वेबसाइट पर इन्हें दिखाने के लिए सुरक्षित Admin Login और Server Database से जोड़ना बाकी है।</div>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f6f8;color:#20313b;font-family:Arial,sans-serif}
+.wrap{max-width:780px;margin:auto;padding:16px}
+header{background:#063d51;color:white;padding:22px;border-radius:18px;margin-bottom:16px}
+.card{background:white;border:1px solid #e0e7eb;border-radius:16px;padding:18px;margin-bottom:14px}
+h1{font-size:22px;margin:0 0 6px}
+h2{font-size:18px}
+label{display:block;font-size:13px;font-weight:bold;margin:12px 0 6px}
+input,textarea{width:100%;padding:12px;border:1px solid #ccd8de;border-radius:10px;font-size:15px}
+textarea{min-height:75px}
+button{border:0;border-radius:10px;padding:12px 16px;background:#08789b;color:white;font-weight:bold}
+.secondary{background:#e8f1f4;color:#164b5e}
+.danger{background:#fff0ef;color:#a52e27}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.status{font-size:13px;margin-top:10px;line-height:1.5}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{text-align:left;padding:10px 5px;border-bottom:1px solid #eee}
+#adminApp{display:none}
+@media(max-width:440px){.row{grid-template-columns:1fr}.wrap{padding:10px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header>
+<h1>RA Services — Admin Panel</h1>
+<p>Website Settings & Diamond Packages</p>
+</header>
+
+<section class="card" id="loginBox">
+<h2>Admin Login</h2>
+<label>Email</label>
+<input id="email" type="email" value="sgufran495@gmail.com">
+<label>Password</label>
+<input id="password" type="password" placeholder="Admin password">
+<div class="actions"><button id="loginButton">Login</button></div>
+<div class="status" id="loginStatus"></div>
+</section>
+
+<div id="adminApp">
+<div class="actions" style="margin-bottom:14px">
+<button class="danger" id="logoutButton">Logout</button>
+</div>
 
 <section class="card">
 <h2>Website Settings</h2>
-<label for="brand">Brand / Website Name</label><input id="brand" placeholder="RA Services">
-<label for="announcement">Top Announcement / Scrolling Message</label><textarea id="announcement" placeholder="💎 IMO Diamond Recharge — Best rate"></textarea>
+<label>Brand Name</label>
+<input id="brand" placeholder="RA Services">
+<label>Announcement</label>
+<textarea id="announcement"></textarea>
 <div class="row">
- <div><label for="whatsapp">WhatsApp Contact Number</label><input id="whatsapp" placeholder="+91 7304704301" inputmode="tel"></div>
- <div><label for="call">Call Now Number</label><input id="call" placeholder="+91 7304704301" inputmode="tel"></div>
+<div>
+<label>WhatsApp Number</label>
+<input id="whatsapp" placeholder="+91 7304704301">
 </div>
-<label for="imo">IMO Group URL</label><input id="imo" type="url" placeholder="Paste your IMO group invite link here">
-<p class="tabhint">IMO Group URL में अपना पूरा invite link डालें। ग्राहक IMO Support/Group पर क्लिक करेगा तो इसी लिंक पर जाएगा; सीधे IMO ऐप में खुलना डिवाइस और IMO की link-handling settings पर निर्भर करेगा।</p>
-<div class="actions"><button id="saveSettings">Save Website Settings</button></div><div class="status" id="settingsStatus" aria-live="polite"></div>
+<div>
+<label>Call Number</label>
+<input id="call" placeholder="+91 7304704301">
+</div>
+</div>
+<label>IMO Group URL</label>
+<input id="imo" type="url" placeholder="IMO invite link">
+<div class="actions"><button id="saveSettings">Save Settings</button></div>
+<div class="status" id="settingsStatus"></div>
 </section>
 
 <section class="card">
-<h2 id="formTitle">Add New Diamond Package</h2>
-<div class="row"><div><label for="diamonds">Diamond Quantity</label><input id="diamonds" type="number" min="1" placeholder="e.g. 100"></div><div><label for="price">Price (INR)</label><input id="price" type="number" min="0" step="0.01" placeholder="e.g. 176"></div></div>
-<div class="actions"><button id="savePackage">Save Package</button><button class="secondary" id="cancel" type="button">Clear</button></div><div class="status" id="packageStatus" aria-live="polite"></div>
+<h2 id="formTitle">Add Diamond Package</h2>
+<div class="row">
+<div>
+<label>Diamond Quantity</label>
+<input id="diamonds" type="number" min="1">
+</div>
+<div>
+<label>Price (INR)</label>
+<input id="price" type="number" min="0">
+</div>
+</div>
+<div class="actions">
+<button id="savePackage">Save Package</button>
+<button class="secondary" id="cancel">Clear</button>
+</div>
+<div class="status" id="packageStatus"></div>
 </section>
-<section class="card"><h2>Current Diamond Packages</h2><table><thead><tr><th>Diamonds</th><th>Price</th><th>Action</th></tr></thead><tbody id="rows"></tbody></table></section>
+
+<section class="card">
+<h2>Current Packages</h2>
+<table>
+<thead><tr><th>Diamonds</th><th>Price</th><th>Action</th></tr></thead>
+<tbody id="rows"></tbody>
+</table>
+</section>
+</div>
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const client=window.supabase.createClient(
+'https://xxnqggagisjrpeupudma.supabase.co',
+'sb_publishable_lveUqOl5kDN6nnVTeLsRrg_RQxAe7rq'
+);
+
+const $=id=>document.getElementById(id);
+
+async function isAdmin(user){
+const {data,error}=await client.from('admin_users')
+.select('user_id').eq('user_id',user.id).maybeSingle();
+if(error)throw error;
+return !!data;
+}
+
+function showAdmin(){
+$('loginBox').style.display='none';
+$('adminApp').style.display='block';
+showSettings();
+render();
+}
+
+$('loginButton').onclick=async()=>{
+const email=$('email').value.trim();
+const password=$('password').value;
+if(!email||!password){$('loginStatus').textContent='Email और Password भरें।';return;}
+$('loginButton').disabled=true;
+$('loginStatus').textContent='Login हो रहा है...';
+try{
+const {data,error}=await client.auth.signInWithPassword({email,password});
+if(error)throw error;
+if(!await isAdmin(data.user)){
+await client.auth.signOut();
+throw new Error('इस अकाउंट को Admin अनुमति नहीं है।');
+}
+$('loginStatus').textContent='';
+showAdmin();
+}catch(e){
+$('loginStatus').textContent='Login असफल: '+e.message;
+}finally{$('loginButton').disabled=false;}
+};
+
+$('logoutButton').onclick=async()=>{
+await client.auth.signOut();
+$('password').value='';
+$('adminApp').style.display='none';
+$('loginBox').style.display='block';
+};
+
 const defaults=[[10,30],[50,92],[100,176],[200,352],[300,528],[500,880],[600,1056],[1000,1760],[2000,3520],[3000,5280],[5000,8800],[10000,17500]];
 const defaultSettings={brand:'RA Services',announcement:'💎 IMO Diamond Recharge — Best rate',whatsapp:'+91 7304704301',call:'+91 7304704301',imo:''};
-const $=id=>document.getElementById(id);
-function load(key,fallback){try{const v=JSON.parse(localStorage.getItem(key));return v??fallback}catch(e){return fallback}}
+
+function load(key,fallback){
+try{return JSON.parse(localStorage.getItem(key))??fallback}catch(e){return fallback}
+}
+
 let data=load('ra_demo_packages',defaults.map(([diamonds,price])=>({diamonds,price})));
 let settings={...defaultSettings,...load('ra_demo_settings',{})};
 let editing=null;
-function showSettings(){Object.keys(defaultSettings).forEach(k=>$(k).value=settings[k]||'')}
-function saveSettings(){settings={brand:$('brand').value.trim()||'RA Services',announcement:$('announcement').value.trim(),whatsapp:$('whatsapp').value.trim(),call:$('call').value.trim(),imo:$('imo').value.trim()};localStorage.setItem('ra_demo_settings',JSON.stringify(settings));$('settingsStatus').textContent='Website settings इस डेमो ब्राउज़र में सेव हो गईं।';}
-function render(){ $('rows').innerHTML='';data.sort((a,b)=>a.diamonds-b.diamonds).forEach((p,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${p.diamonds.toLocaleString('en-IN')}</td><td>₹${Number(p.price).toFixed(2)}</td><td><button class="secondary" data-edit="${i}">Edit</button> <button class="danger" data-delete="${i}">Delete</button></td>`;$('rows').appendChild(tr);});}
-function persist(){localStorage.setItem('ra_demo_packages',JSON.stringify(data));render();}
+
+function showSettings(){
+Object.keys(defaultSettings).forEach(k=>$(k).value=settings[k]||'');
+}
+
+function saveSettings(){
+settings={
+brand:$('brand').value.trim()||'RA Services',
+announcement:$('announcement').value.trim(),
+whatsapp:$('whatsapp').value.trim(),
+call:$('call').value.trim(),
+imo:$('imo').value.trim()
+};
+localStorage.setItem('ra_demo_settings',JSON.stringify(settings));
+$('settingsStatus').textContent='Settings इस ब्राउज़र में सेव हो गईं।';
+}
+
+function render(){
+$('rows').innerHTML='';
+data.sort((a,b)=>a.diamonds-b.diamonds).forEach((p,i)=>{
+const tr=document.createElement('tr');
+tr.innerHTML=`<td>${p.diamonds}</td><td>₹${Number(p.price).toFixed(2)}</td><td><button class="secondary" data-edit="${i}">Edit</button> <button class="danger" data-delete="${i}">Delete</button></td>`;
+$('rows').appendChild(tr);
+});
+}
+
+function persist(){
+localStorage.setItem('ra_demo_packages',JSON.stringify(data));
+render();
+}
+
 $('saveSettings').onclick=saveSettings;
-$('savePackage').onclick=()=>{const diamonds=Number($('diamonds').value),price=Number($('price').value);if(!Number.isInteger(diamonds)||diamonds<1||!Number.isFinite(price)||price<0){$('packageStatus').textContent='कृपया सही Diamond Quantity और Price भरें।';return;}if(editing===null){if(data.some(p=>p.diamonds===diamonds)){$('packageStatus').textContent='यह पैकेज पहले से मौजूद है। Edit विकल्प इस्तेमाल करें।';return;}data.push({diamonds,price});}else{data[editing]={diamonds,price};editing=null;}$('diamonds').value='';$('price').value='';$('formTitle').textContent='Add New Diamond Package';$('packageStatus').textContent='पैकेज डेमो में सेव हो गया।';persist();};
-$('rows').onclick=e=>{const edit=e.target.dataset.edit,del=e.target.dataset.delete;if(edit!==undefined){editing=Number(edit);const p=data[editing];$('diamonds').value=p.diamonds;$('price').value=p.price;$('formTitle').textContent='Edit Diamond Package';$('packageStatus').textContent='बदलाव करके Save Package दबाएँ।';}if(del!==undefined&&confirm('क्या यह पैकेज हटाना चाहते हैं?')){data.splice(Number(del),1);persist();$('packageStatus').textContent='पैकेज डेमो से हट गया।';}};
-$('cancel').onclick=()=>{editing=null;$('diamonds').value='';$('price').value='';$('formTitle').textContent='Add New Diamond Package';$('packageStatus').textContent='';};
-showSettings();render();
-</script></body></html>
+
+$('savePackage').onclick=()=>{
+const diamonds=Number($('diamonds').value);
+const price=Number($('price').value);
+if(!Number.isInteger(diamonds)||diamonds<1||!Number.isFinite(price)||price<0){
+$('packageStatus').textContent='सही Quantity और Price भरें।';return;
+}
+if(editing===null){
+if(data.some(p=>p.diamonds===diamonds)){
+$('packageStatus').textContent='पैकेज पहले से मौजूद है।';return;
+}
+data.push({diamonds,price});
+}else{data[editing]={diamonds,price};editing=null;}
+$('diamonds').value='';
+$('price').value='';
+$('formTitle').textContent='Add Diamond Package';
+$('packageStatus').textContent='पैकेज सेव हो गया।';
+persist();
+};
+
+$('rows').onclick=e=>{
+const edit=e.target.dataset.edit;
+const del=e.target.dataset.delete;
+if(edit!==undefined){
+editing=Number(edit);
+const p=data[editing];
+$('diamonds').value=p.diamonds;
+$('price').value=p.price;
+$('formTitle').textContent='Edit Diamond Package';
+}
+if(del!==undefined&&confirm('पैकेज हटाना चाहते हैं?')){
+data.splice(Number(del),1);persist();
+}
+};
+
+$('cancel').onclick=()=>{
+editing=null;
+$('diamonds').value='';
+$('price').value='';
+$('formTitle').textContent='Add Diamond Package';
+$('packageStatus').textContent='';
+};
+
+async function start(){
+const {data:{session}}=await client.auth.getSession();
+if(!session)return;
+try{if(await isAdmin(session.user))showAdmin();else await client.auth.signOut();}
+catch(e){$('loginStatus').textContent='Admin जाँच में समस्या: '+e.message;}
+}
+start();
+</script>
+</body>
+</html>
