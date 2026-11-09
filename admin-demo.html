@@ -16,6 +16,7 @@ label{display:block;font-size:13px;font-weight:bold;margin:12px 0 6px}
 input,textarea{width:100%;padding:12px;border:1px solid #ccd8de;border-radius:10px;font-size:15px}
 textarea{min-height:75px}
 button{border:0;border-radius:10px;padding:12px 16px;background:#08789b;color:white;font-weight:bold}
+button:disabled{opacity:.5}
 .secondary{background:#e8f1f4;color:#164b5e}
 .danger{background:#fff0ef;color:#a52e27}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -109,6 +110,24 @@ const client=window.supabase.createClient(
 
 const $=id=>document.getElementById(id);
 
+const defaults=[
+[10,30],[50,92],[100,176],[200,352],[300,528],
+[500,880],[600,1056],[1000,1760],[2000,3520],
+[3000,5280],[5000,8800],[10000,17500]
+];
+
+const defaultSettings={
+brand:'RA Services',
+announcement:'IMO Diamond Recharge',
+whatsapp:'+91 7304704301',
+call:'+91 7304704301',
+imo:''
+};
+
+let settings={...defaultSettings};
+let packages=defaults.map(([diamonds,price])=>({diamonds,price}));
+let editing=null;
+
 async function isAdmin(user){
 const {data,error}=await client.from('admin_users')
 .select('user_id').eq('user_id',user.id).maybeSingle();
@@ -116,31 +135,107 @@ if(error)throw error;
 return !!data;
 }
 
+async function saveToDatabase(){
+const payload={
+site:settings,
+packages:packages
+};
+
+const {error}=await client.from('site_settings')
+.update({
+settings:payload,
+updated_at:new Date().toISOString()
+})
+.eq('id',1);
+
+if(error)throw error;
+}
+
+function showSettings(){
+Object.keys(defaultSettings).forEach(k=>{
+$(k).value=settings[k]||'';
+});
+}
+
+function render(){
+$('rows').innerHTML='';
+
+packages.sort((a,b)=>a.diamonds-b.diamonds).forEach((p,i)=>{
+const tr=document.createElement('tr');
+tr.innerHTML=
+`<td>${p.diamonds}</td>
+<td>₹${Number(p.price).toFixed(2)}</td>
+<td>
+<button class="secondary" data-edit="${i}">Edit</button>
+<button class="danger" data-delete="${i}">Delete</button>
+</td>`;
+$('rows').appendChild(tr);
+});
+}
+
+async function loadFromDatabase(){
+$('settingsStatus').textContent='Database से डेटा लोड हो रहा है...';
+
+const {data,error}=await client.from('site_settings')
+.select('settings').eq('id',1).single();
+
+if(error)throw error;
+
+const saved=data.settings||{};
+
+settings={...defaultSettings,...(saved.site||{})};
+
+if(Array.isArray(saved.packages)){
+packages=saved.packages;
+}
+
+showSettings();
+render();
+
+$('settingsStatus').textContent='Database से डेटा लोड हो गया।';
+}
+
 function showAdmin(){
 $('loginBox').style.display='none';
 $('adminApp').style.display='block';
-showSettings();
-render();
+
+loadFromDatabase().catch(e=>{
+$('settingsStatus').textContent='डेटा लोड नहीं हुआ: '+e.message;
+});
 }
 
 $('loginButton').onclick=async()=>{
 const email=$('email').value.trim();
 const password=$('password').value;
-if(!email||!password){$('loginStatus').textContent='Email और Password भरें।';return;}
+
+if(!email||!password){
+$('loginStatus').textContent='Email और Password भरें।';
+return;
+}
+
 $('loginButton').disabled=true;
 $('loginStatus').textContent='Login हो रहा है...';
+
 try{
-const {data,error}=await client.auth.signInWithPassword({email,password});
+const {data,error}=await client.auth.signInWithPassword({
+email,password
+});
+
 if(error)throw error;
+
 if(!await isAdmin(data.user)){
 await client.auth.signOut();
 throw new Error('इस अकाउंट को Admin अनुमति नहीं है।');
 }
+
 $('loginStatus').textContent='';
 showAdmin();
+
 }catch(e){
 $('loginStatus').textContent='Login असफल: '+e.message;
-}finally{$('loginButton').disabled=false;}
+}finally{
+$('loginButton').disabled=false;
+}
 };
 
 $('logoutButton').onclick=async()=>{
@@ -150,22 +245,10 @@ $('adminApp').style.display='none';
 $('loginBox').style.display='block';
 };
 
-const defaults=[[10,30],[50,92],[100,176],[200,352],[300,528],[500,880],[600,1056],[1000,1760],[2000,3520],[3000,5280],[5000,8800],[10000,17500]];
-const defaultSettings={brand:'RA Services',announcement:'💎 IMO Diamond Recharge — Best rate',whatsapp:'+91 7304704301',call:'+91 7304704301',imo:''};
+$('saveSettings').onclick=async()=>{
+$('saveSettings').disabled=true;
+$('settingsStatus').textContent='सेव हो रहा है...';
 
-function load(key,fallback){
-try{return JSON.parse(localStorage.getItem(key))??fallback}catch(e){return fallback}
-}
-
-let data=load('ra_demo_packages',defaults.map(([diamonds,price])=>({diamonds,price})));
-let settings={...defaultSettings,...load('ra_demo_settings',{})};
-let editing=null;
-
-function showSettings(){
-Object.keys(defaultSettings).forEach(k=>$(k).value=settings[k]||'');
-}
-
-function saveSettings(){
 settings={
 brand:$('brand').value.trim()||'RA Services',
 announcement:$('announcement').value.trim(),
@@ -173,57 +256,82 @@ whatsapp:$('whatsapp').value.trim(),
 call:$('call').value.trim(),
 imo:$('imo').value.trim()
 };
-localStorage.setItem('ra_demo_settings',JSON.stringify(settings));
-$('settingsStatus').textContent='Settings इस ब्राउज़र में सेव हो गईं।';
+
+try{
+await saveToDatabase();
+$('settingsStatus').textContent='Settings Supabase Database में सेव हो गईं।';
+}catch(e){
+$('settingsStatus').textContent='सेव नहीं हुआ: '+e.message;
+}finally{
+$('saveSettings').disabled=false;
 }
+};
 
-function render(){
-$('rows').innerHTML='';
-data.sort((a,b)=>a.diamonds-b.diamonds).forEach((p,i)=>{
-const tr=document.createElement('tr');
-tr.innerHTML=`<td>${p.diamonds}</td><td>₹${Number(p.price).toFixed(2)}</td><td><button class="secondary" data-edit="${i}">Edit</button> <button class="danger" data-delete="${i}">Delete</button></td>`;
-$('rows').appendChild(tr);
-});
-}
-
-function persist(){
-localStorage.setItem('ra_demo_packages',JSON.stringify(data));
-render();
-}
-
-$('saveSettings').onclick=saveSettings;
-
-$('savePackage').onclick=()=>{
+$('savePackage').onclick=async()=>{
 const diamonds=Number($('diamonds').value);
 const price=Number($('price').value);
-if(!Number.isInteger(diamonds)||diamonds<1||!Number.isFinite(price)||price<0){
-$('packageStatus').textContent='सही Quantity और Price भरें।';return;
+
+if(!Number.isInteger(diamonds)||diamonds<1||
+!Number.isFinite(price)||price<0){
+$('packageStatus').textContent='सही Quantity और Price भरें।';
+return;
 }
+
 if(editing===null){
-if(data.some(p=>p.diamonds===diamonds)){
-$('packageStatus').textContent='पैकेज पहले से मौजूद है।';return;
+if(packages.some(p=>p.diamonds===diamonds)){
+$('packageStatus').textContent='पैकेज पहले से मौजूद है।';
+return;
 }
-data.push({diamonds,price});
-}else{data[editing]={diamonds,price};editing=null;}
+packages.push({diamonds,price});
+}else{
+packages[editing]={diamonds,price};
+editing=null;
+}
+
+$('savePackage').disabled=true;
+
+try{
+await saveToDatabase();
+
 $('diamonds').value='';
 $('price').value='';
 $('formTitle').textContent='Add Diamond Package';
-$('packageStatus').textContent='पैकेज सेव हो गया।';
-persist();
+$('packageStatus').textContent='पैकेज Database में सेव हो गया।';
+render();
+
+}catch(e){
+$('packageStatus').textContent='सेव नहीं हुआ: '+e.message;
+}finally{
+$('savePackage').disabled=false;
+}
 };
 
-$('rows').onclick=e=>{
+$('rows').onclick=async e=>{
 const edit=e.target.dataset.edit;
 const del=e.target.dataset.delete;
+
 if(edit!==undefined){
 editing=Number(edit);
-const p=data[editing];
+const p=packages[editing];
+
 $('diamonds').value=p.diamonds;
 $('price').value=p.price;
 $('formTitle').textContent='Edit Diamond Package';
 }
+
 if(del!==undefined&&confirm('पैकेज हटाना चाहते हैं?')){
-data.splice(Number(del),1);persist();
+const oldPackages=[...packages];
+packages.splice(Number(del),1);
+
+try{
+await saveToDatabase();
+render();
+$('packageStatus').textContent='पैकेज हटा दिया गया।';
+}catch(e){
+packages=oldPackages;
+render();
+$('packageStatus').textContent='हटाया नहीं गया: '+e.message;
+}
 }
 };
 
@@ -237,10 +345,20 @@ $('packageStatus').textContent='';
 
 async function start(){
 const {data:{session}}=await client.auth.getSession();
+
 if(!session)return;
-try{if(await isAdmin(session.user))showAdmin();else await client.auth.signOut();}
-catch(e){$('loginStatus').textContent='Admin जाँच में समस्या: '+e.message;}
+
+try{
+if(await isAdmin(session.user)){
+showAdmin();
+}else{
+await client.auth.signOut();
 }
+}catch(e){
+$('loginStatus').textContent='Admin जाँच में समस्या: '+e.message;
+}
+}
+
 start();
 </script>
 </body>
